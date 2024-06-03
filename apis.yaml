@@ -1,0 +1,16 @@
+rest_gateway:
+  url: https://internal-apigw.central.arubanetworks.com
+  port: 443
+refresh: 
+  method: POST
+  uri: /oauth2/token
+get_site:
+  method: GET
+  uri: /central/v2/sites 
+delete_ap_site:
+  method: DELETE
+  uri: /central/v2/sites/associate #make sure to append serial number to call
+post_ap_site:
+  method: POST
+  uri: /central/v2/sites/associate #make sure to append serial number to call
+  
