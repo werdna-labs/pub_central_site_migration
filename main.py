@@ -65,7 +65,7 @@ def main():
     secrets = load_yaml("secrets.yaml")
     apis = load_yaml("apis.yaml")
     base_rest_gateway = apis["rest_gateway"]["url"]
-    data = pd.read_excel("aps_serials.xlsx").to_dict()
+    data = pd.read_excel("aps_serials.xlsx").fillna("").to_dict()
     delete_ap_site_method = apis["delete_ap_site"]["method"]
     delete_ap_site_uri = apis["delete_ap_site"]["uri"]
     post_ap_site_method = apis["post_ap_site"]["method"]
@@ -81,40 +81,47 @@ def main():
     for site in site_info["sites"]:
         site_name_to_id[site["site_name"]] = site["site_id"]
 
-# # remove existing site assignment
+# remove existing site assignment; skip is old_site empty as would be the case with Unassigned APs. 
 
-#     for index, serial in data["serial number"].items():
-#         print(f"index {index} serial {serial}")
-#         payload = {
-#     "device_type": "IAP",
-#     "device_id": f"{serial}",
-#     "site_id": site_name_to_id[data["old_site"][index]]
-#         }
-#         r = make_request(delete_ap_site_method, base_rest_gateway, delete_ap_site_uri, payload, token = secrets["access_token"])
-#         if r != None:
-#             if r.status_code == 200:
-#                 print(f"successfully deleted ap with serial {serial} from old site {data["old_site"][index]}")
-#             else:
-#                 print(f"Something went wrong:")
-#                 print(r.status_code)
-#                 print(r.headers)
+    for index, serial in data["serial number"].items():
+        print(f"index {index} serial {serial}")
+        print(data["old_site"][index])
+        if data["old_site"][index] != "":
+            payload = {
+        "device_type": "IAP",
+        "device_id": f"{serial}",
+        "site_id": site_name_to_id[data["old_site"][index]]
+            }
+            r = make_request(delete_ap_site_method, base_rest_gateway, delete_ap_site_uri, payload, token = secrets["access_token"])
+            if r != None:
+                if r.status_code == 200:
+                    print(f"successfully deleted ap with serial {serial} from old site {data["old_site"][index]}")
+                else:
+                    print(f"Something went wrong:")
+                    print(r.status_code)
+                    print(r.headers)
+        else:
+            print(f"site not assigned to serial {serial}; skipping")
+            next
+            
         
-# #add new site assignment 
+#add new site assignment 
     
-#     for index, serial in data["serial number"].items():
-#         print(f"index {index} serial {serial}")
-#         payload = {
-#     "device_type": "IAP",
-#     "device_id": f"{serial}",
-#     "site_id": site_name_to_id[data["new_site"][index]]
-#         }
-#         r = make_request(post_ap_site_method, base_rest_gateway, post_ap_site_uri, payload, token = secrets["access_token"])
-#         if r != None:
-#             if r.status_code == 200:
-#                 print(f"successfully updated ap with serial {serial} to new site {data["new_site"][index]}")
-#             else:
-#                 print(f"Something went wrong:")
-#                 print(r.status_code)
-#                 print(r.headers)
+    for index, serial in data["serial number"].items():
+        print(f"index {index} serial {serial}")
+        payload = {
+    "device_type": "IAP",
+    "device_id": f"{serial}",
+    "site_id": site_name_to_id[data["new_site"][index]]
+        }
+        r = make_request(post_ap_site_method, base_rest_gateway, post_ap_site_uri, payload, token = secrets["access_token"])
+        if r != None:
+            if r.status_code == 200:
+                print(f"successfully updated ap with serial {serial} to new site {data["new_site"][index]}")
+            else:
+                print(f"Something went wrong:")
+                print(r.status_code)
+                print(r.headers)
+
 if __name__ == "__main__":
     main()
