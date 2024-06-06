@@ -16,6 +16,7 @@ modify ap site assignment via serial with excel upload
 7. adjust your old_site column in the spreadsheet to the old site of the APs you desire to move; adjust your new_site column to the name of your new site. 
 
     **Note: Site names must be exact including case sensitivity and punctuation if applicable**
-
+    **Note: if AP is currently unassigned, leave the old_site column empty**
+    
 8. run the script with /path/to/venv/interpreter/python.exe /path/to/script/directory/python.exe
 
