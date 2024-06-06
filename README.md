@@ -1,4 +1,4 @@
-# AP site reassignment
+# AP Site Reassignment
 modify ap site assignment via serial with excel upload
 
 1. create a venv following the official python docs for your environment and activate it

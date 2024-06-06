@@ -43,7 +43,11 @@ def refresh_token(api_gateway_file: str = "apis.yaml", secrets_file: str = "secr
                        "grant_type" : "refresh_token",
                        "refresh_token" : secrets["refresh_token"]}
     #request refresh
-    refresh_token = make_request(refresh_method, rest_gateway, refresh_uri, refresh_params).json()
+    refresh_token = make_request(refresh_method, rest_gateway, refresh_uri, refresh_params)
+    if refresh_token != None:
+        refresh_token = refresh_token.json()
+    else:
+        raise TypeError("The call to refresh your token failed. Double check your secret parameters in secrets.yaml and your api gateway in apis.yaml.")
 #update secrets
     secrets["access_token"] = refresh_token["access_token"]
     secrets["refresh_token"] = refresh_token["refresh_token"]
@@ -77,40 +81,40 @@ def main():
     for site in site_info["sites"]:
         site_name_to_id[site["site_name"]] = site["site_id"]
 
-# remove existing site assignment
+# # remove existing site assignment
 
-    for index, serial in data["serial number"].items():
-        print(f"index {index} serial {serial}")
-        payload = {
-    "device_type": "IAP",
-    "device_id": f"{serial}",
-    "site_id": site_name_to_id[data["old_site"][index]]
-        }
-        r = make_request(delete_ap_site_method, base_rest_gateway, delete_ap_site_uri, payload, token = secrets["access_token"])
-        if r != None:
-            if r.status_code == 200:
-                print(f"successfully deleted ap with serial {serial} from old site {data["old_site"][index]}")
-            else:
-                print(f"Something went wrong:")
-                print(r.status_code)
-                print(r.headers)
+#     for index, serial in data["serial number"].items():
+#         print(f"index {index} serial {serial}")
+#         payload = {
+#     "device_type": "IAP",
+#     "device_id": f"{serial}",
+#     "site_id": site_name_to_id[data["old_site"][index]]
+#         }
+#         r = make_request(delete_ap_site_method, base_rest_gateway, delete_ap_site_uri, payload, token = secrets["access_token"])
+#         if r != None:
+#             if r.status_code == 200:
+#                 print(f"successfully deleted ap with serial {serial} from old site {data["old_site"][index]}")
+#             else:
+#                 print(f"Something went wrong:")
+#                 print(r.status_code)
+#                 print(r.headers)
         
-#add new site assignment 
+# #add new site assignment 
     
-    for index, serial in data["serial number"].items():
-        print(f"index {index} serial {serial}")
-        payload = {
-    "device_type": "IAP",
-    "device_id": f"{serial}",
-    "site_id": site_name_to_id[data["new_site"][index]]
-        }
-        r = make_request(post_ap_site_method, base_rest_gateway, post_ap_site_uri, payload, token = secrets["access_token"])
-        if r != None:
-            if r.status_code == 200:
-                print(f"successfully updated ap with serial {serial} to new site {data["new_site"][index]}")
-            else:
-                print(f"Something went wrong:")
-                print(r.status_code)
-                print(r.headers)
+#     for index, serial in data["serial number"].items():
+#         print(f"index {index} serial {serial}")
+#         payload = {
+#     "device_type": "IAP",
+#     "device_id": f"{serial}",
+#     "site_id": site_name_to_id[data["new_site"][index]]
+#         }
+#         r = make_request(post_ap_site_method, base_rest_gateway, post_ap_site_uri, payload, token = secrets["access_token"])
+#         if r != None:
+#             if r.status_code == 200:
+#                 print(f"successfully updated ap with serial {serial} to new site {data["new_site"][index]}")
+#             else:
+#                 print(f"Something went wrong:")
+#                 print(r.status_code)
+#                 print(r.headers)
 if __name__ == "__main__":
     main()
